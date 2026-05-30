@@ -1,5 +1,5 @@
 # X-MASS-REPLY-DELETER.
-This Deletes X (Twitter) Replies you've made in the past. Use with Caution: It Deletes them all.
+This tool is for educational purposes only. Automated engagement and mass-deletions violate X's Terms of Service. Use of this script may lead to temporary or permanent account suspension. I am not responsible for any actions taken against your account.
 
 How to use it:
 1. Go to your Profile page on X.
