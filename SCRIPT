@@ -1,0 +1,63 @@
+async function deleteReplies() {
+  console.log("Searching for replies to delete...");
+  
+  // Find all the "More" (three dots) buttons on the screen
+  const carets = document.querySelectorAll('[data-testid="caret"]');
+  
+  if (carets.length === 0) {
+    console.log("No menus found on screen. Scrolling down...");
+    window.scrollTo(0, document.body.scrollHeight);
+    // Wait 4 seconds for new tweets to load
+    setTimeout(deleteReplies, 4000);
+    return;
+  }
+
+  for (const caret of carets) {
+    // Step 1: Click the three dots menu
+    caret.click();
+    
+    // Wait 500ms for the dropdown menu to physically render on screen
+    await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    // Step 2: Search the newly opened menu for the "Delete" button
+    // We grab all menu items and look for the word "Delete"
+    const menuItems = Array.from(document.querySelectorAll('[role="menuitem"]'));
+    const deleteBtn = menuItems.find(item => item.textContent.includes('Delete'));
+
+    if (deleteBtn) {
+      // We found a delete button! That means this is YOUR reply.
+      deleteBtn.click();
+      
+      // Wait 500ms for the red confirmation pop-up window to appear
+      await new Promise(resolve => setTimeout(resolve, 500)); 
+
+      // Step 3: Find the red "Delete" confirmation button and click it
+      const confirmBtn = document.querySelector('[data-testid="confirmationSheetConfirm"]');
+      if (confirmBtn) {
+        confirmBtn.click();
+        console.log("Successfully deleted a reply.");
+        
+        // Random delay (1.5 to 3.5 seconds) to avoid rate limits
+        const randomDelay = Math.floor(Math.random() * 2000) + 1500; 
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
+      } else {
+        // Failsafe just in case the pop-up didn't load
+        document.body.click(); 
+      }
+    } else {
+      // No delete button found. This must be the parent tweet you replied to.
+      // Click the background to close the menu and move to the next one.
+      document.body.click();
+      await new Promise(resolve => setTimeout(resolve, 200)); 
+    }
+  }
+
+  console.log("Finished current batch. Scrolling for more...");
+  window.scrollTo(0, document.body.scrollHeight);
+  
+  // Wait 4 seconds before starting the next batch
+  setTimeout(deleteReplies, 4000);
+}
+
+// Start the process
+deleteReplies();
